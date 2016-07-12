@@ -1,4 +1,4 @@
-﻿
+
 // taken from https://gist.github.com/mbostock/19168c663618b7f07158
 // Based on https://www.jasondavies.com/poisson-disc/
 function poissonDiscSampler(width, height, radius) {

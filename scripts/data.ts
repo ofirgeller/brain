@@ -1,4 +1,4 @@
-module d {
+﻿module d {
 
     var colors = {
         Orange: '#e83d19',
@@ -9,5 +9,4 @@ module d {
         Gray: '#bfbfbf',
         LighterGray: '#f5f5f5',
     }
-
 }

@@ -1,4 +1,4 @@
-﻿
+
 // make the impulses bigger and have nicer colors
 // the neurons bigger and more complex
 // make axon have a visual direction
