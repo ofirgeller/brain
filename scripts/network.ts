@@ -9,7 +9,6 @@
 // make the axon more curve.
 
 var app = angular.module('app',[]);
-alert('ssdf');
 
 interface IPoint {
     x: number;
@@ -171,6 +170,12 @@ function getPointsOnPath(path: Snap.Element) {
 
 
 var jSvg = $('#network');
+
+function sizeSvg (){
+    jSvg.height($(window).innerHeight() -20);
+    jSvg.width($(window).innerWidth() -20);
+}
+sizeSvg();
 
 var svg = <SVGElement><any>jSvg.get(0);
 var ctx = Snap(svg);

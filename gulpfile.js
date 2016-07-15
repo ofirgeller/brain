@@ -20,7 +20,7 @@ var paths = {
         output: 'wwwroot/scripts/'
     },
     styles: {
-        input: 'src/**/*.{less,css}',
+        input: 'styles/**/*.{less,css}',
         output: 'dist/styles/'
     },
     svgs: {
@@ -50,9 +50,11 @@ var paths = {
     }
 };
 
-//var paths = {
-//    scripts: ['scripts/**/*.js', 'scripts/**/*.ts', 'scripts/**/*.map'],
-//};
+gulp.task('styles', function () {
+  return gulp.src('./styles/**/*.less')
+    .pipe(less())
+    .pipe(gulp.dest('./wwwroot/styles'));
+});
 
 gulp.task('clean', function () {
     return del(['wwwroot/js/**/*']);
@@ -77,11 +79,13 @@ gulp.task('libs',['clean'],function(){
                .pipe(gulp.dest('wwwroot/scripts/libs'));
 });
 
-gulp.task('watch', ['scripts','libs'], function () {
-    return gulp.watch(paths.scripts.input, { ignoreInitial: false },['default']);
-       
+gulp.task('watch', ['default'], function () {
+    return gulp.watch([
+                        paths.scripts.input,
+                        paths.styles.input,
+                         ], { ignoreInitial: false },['default']);
 });
 
-gulp.task('default', ['scripts','libs'], function () {
+gulp.task('default', ['scripts','libs','styles'], function () {
   
 });
