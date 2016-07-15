@@ -9,7 +9,7 @@
 // make the axon more curve.
 
 var app = angular.module('app',[]);
-
+alert('ssdf');
 
 interface IPoint {
     x: number;
