@@ -77,7 +77,11 @@ gulp.task('libs',['clean'],function(){
                .pipe(gulp.dest('wwwroot/scripts/libs'));
 });
 
+gulp.task('watch', ['scripts','libs'], function () {
+    return gulp.watch(paths.scripts.input, { ignoreInitial: false },['default']);
+       
+});
+
 gulp.task('default', ['scripts','libs'], function () {
-   return gulp.src(paths.scripts.input)
-    .pipe(gulp.dest('wwwroot/scripts'));
+  
 });
