@@ -1,15 +1,12 @@
 
 ///<reference path="_all.d.ts" />
 
-
 // TODO: 
 // make the impulses bigger and have nicer colors
 // the neurons bigger and more complex
 // make axon have a visual direction
 // make neuron randomly emit impulses(?)
 // make the axon more curve.
-
-var app = angular.module('app',[]);
 
 interface IPoint {
     x: number;
@@ -20,7 +17,7 @@ class Pos implements IPoint {
     constructor(public x, public y) {
     }
 }
-
+//ss
 var neurons: Neuron[] = [];
 var axons: Axon[] = [];
 
