@@ -17,10 +17,10 @@ var paths = {
     output: 'dist/',
     scripts: {
         input: 'scripts/**/*.ts',
-        output: 'wwwroot/js/'
+        output: 'wwwroot/scripts/'
     },
     styles: {
-        input: 'src/**/*.{less,css}',
+        input: 'styles/**/*.{less,css}',
         output: 'dist/styles/'
     },
     svgs: {
@@ -50,9 +50,12 @@ var paths = {
     }
 };
 
-//var paths = {
-//    scripts: ['scripts/**/*.js', 'scripts/**/*.ts', 'scripts/**/*.map'],
-//};
+
+gulp.task('styles', function () {
+  return gulp.src('./styles/**/*.less')
+    .pipe(less())
+    .pipe(gulp.dest('./wwwroot/styles'));
+});
 
 gulp.task('clean', function () {
     return del(['wwwroot/js/**/*']);
@@ -60,7 +63,7 @@ gulp.task('clean', function () {
 
 gulp.task('scripts', ['clean'], function () {
 
-    return gulp.src(paths.scripts.input)
+    return gulp.src([paths.scripts.input, '!scripts/libs/**/*'])
         .pipe(typescript({
             noImplicitAny: false,
             out: 'script.js'
@@ -74,4 +77,20 @@ gulp.task('scripts', ['clean'], function () {
 
 gulp.task('default', ['scripts'], function () {
     gulp.src(paths.scripts).pipe(gulp.dest('wwwroot/scripts'));
+});
+
+gulp.task('libs',['clean'],function(){
+    return gulp.src('./scripts/libs/**/*')
+               .pipe(gulp.dest('wwwroot/scripts/libs'));
+});
+
+gulp.task('watch', ['default'], function () {
+    return gulp.watch([
+                        paths.scripts.input,
+                        paths.styles.input,
+                         ], { ignoreInitial: false },['default']);
+});
+
+gulp.task('default', ['scripts','libs','styles'], function () {
+  
 });

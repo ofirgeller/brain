@@ -1,9 +1,15 @@
-﻿
+
+///<reference path="_all.d.ts" />
+
+
+// TODO: 
 // make the impulses bigger and have nicer colors
 // the neurons bigger and more complex
 // make axon have a visual direction
 // make neuron randomly emit impulses(?)
 // make the axon more curve.
+
+var app = angular.module('app',[]);
 
 interface IPoint {
     x: number;
@@ -165,6 +171,12 @@ function getPointsOnPath(path: Snap.Element) {
 
 
 var jSvg = $('#network');
+
+function sizeSvg (){
+    jSvg.height($(window).innerHeight() -20);
+    jSvg.width($(window).innerWidth() -20);
+}
+sizeSvg();
 
 var svg = <SVGElement><any>jSvg.get(0);
 var ctx = Snap(svg);

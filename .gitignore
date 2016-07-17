@@ -2,3 +2,8 @@
 bin/
 obj/
 node_modules/
+<<<<<<< HEAD
+=======
+wwwroot/scripts/**/*
+wwwroot/styles/**/*
+>>>>>>> 3c2877296168c83e482b86f29b21910e48b21082

@@ -1,4 +1,9 @@
-﻿.container-row {
+.container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+.container-row {
   display: flex;
   -ms-flex-direction: row;
   -webkit-flex-direction: row;
@@ -25,8 +30,8 @@
   width: 317px;
 }
 .unit svg {
-  height: 315px;
-  width: 317px;
+  height: 615px;
+  width: 617px;
 }
 .unit p {
   font-size: 1.2em;
