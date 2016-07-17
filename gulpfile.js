@@ -11,6 +11,8 @@ var typescript = require('gulp-typescript');
 var less = require('gulp-less');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
+var browserSyncModule = require('browser-sync');
+var browserSync = browserSyncModule.create();
 
 var paths = {
     input: 'src/**/*',
@@ -52,9 +54,11 @@ var paths = {
 
 
 gulp.task('styles', function () {
-  return gulp.src('./styles/**/*.less')
-    .pipe(less())
-    .pipe(gulp.dest('./wwwroot/styles'));
+    return gulp.src('./styles/**/*.less')
+        .pipe(less())
+        .pipe(gulp.dest('./wwwroot/styles'))
+        .pipe(browserSync.stream({match:'**/*.css'}));
+    
 });
 
 gulp.task('clean', function () {
@@ -75,22 +79,42 @@ gulp.task('scripts', ['clean'], function () {
 
 });
 
-gulp.task('default', ['scripts'], function () {
-    gulp.src(paths.scripts).pipe(gulp.dest('wwwroot/scripts'));
+gulp.task('default', ['scripts','styles'], function () {
+//    return gulp.src(paths.scripts).pipe(gulp.dest('wwwroot/scripts'));
 });
 
-gulp.task('libs',['clean'],function(){
+gulp.task('libs', ['clean'], function () {
     return gulp.src('./scripts/libs/**/*')
-               .pipe(gulp.dest('wwwroot/scripts/libs'));
+        .pipe(gulp.dest('wwwroot/scripts/libs'));
 });
 
 gulp.task('watch', ['default'], function () {
     return gulp.watch([
-                        paths.scripts.input,
-                        paths.styles.input,
-                         ], { ignoreInitial: false },['default']);
+        paths.scripts.input,
+        paths.styles.input,
+    ], { ignoreInitial: false }, ['default']);
 });
 
-gulp.task('default', ['scripts','libs','styles'], function () {
-  
+gulp.task('default', ['scripts', 'libs', 'styles'], function () {
+
+});
+
+
+gulp.task('serve', ['watch'], function (cb) {
+
+    browserSync.init({
+        proxy: 'http://localhost:5000/',
+        files: ['wwwroot/scripts/*','wwwroot/**/*.html'],
+        middleware: [
+            //{
+            //    route: "/api", // per-route
+            //    handle: function (req, res, next) {
+            //        // handle any requests at /api
+            //        log(req);
+            //        return next();
+            //    }
+            //}
+        ]
+    });
+
 });
