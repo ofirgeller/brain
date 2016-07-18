@@ -3,3 +3,5 @@
 ///<reference path="../typings/globals/angular/index.d.ts" />
 ///<reference path="colors.ts" />
 ///<reference path="poissonDiscSampler.ts" />
+///<reference path="util.ts" />
+
