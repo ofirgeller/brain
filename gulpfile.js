@@ -57,8 +57,8 @@ gulp.task('styles', function () {
     return gulp.src('./styles/**/*.less')
         .pipe(less())
         .pipe(gulp.dest('./wwwroot/styles'))
-        .pipe(browserSync.stream({match:'**/*.css'}));
-    
+        .pipe(browserSync.stream({ match: '**/*.css' }));
+
 });
 
 gulp.task('clean', function () {
@@ -79,8 +79,8 @@ gulp.task('scripts', ['clean'], function () {
 
 });
 
-gulp.task('default', ['scripts','styles'], function () {
-//    return gulp.src(paths.scripts).pipe(gulp.dest('wwwroot/scripts'));
+gulp.task('default', ['scripts', 'styles'], function () {
+    //    return gulp.src(paths.scripts).pipe(gulp.dest('wwwroot/scripts'));
 });
 
 gulp.task('libs', ['clean'], function () {
@@ -100,11 +100,11 @@ gulp.task('default', ['scripts', 'libs', 'styles'], function () {
 });
 
 
-gulp.task('serve', ['watch'], function (cb) {
+gulp.task('proxy', ['watch'], function (cb) {
 
     browserSync.init({
         proxy: 'http://localhost:5000/',
-        files: ['wwwroot/scripts/*','wwwroot/**/*.html'],
+        files: ['wwwroot/scripts/*', 'wwwroot/**/*.html'],
         middleware: [
             //{
             //    route: "/api", // per-route
@@ -115,6 +115,18 @@ gulp.task('serve', ['watch'], function (cb) {
             //    }
             //}
         ]
+    });
+
+});
+
+gulp.task('serve', ['watch'], function (cb) {
+
+    browserSync.init({
+        server: {
+            baseDir: "./"
+        },
+        startPath:'wwwroot/network.html',
+        files: ['wwwroot/scripts/*', 'wwwroot/**/*.html'],
     });
 
 });
