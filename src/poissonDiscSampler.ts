@@ -10,8 +10,8 @@ function poissonDiscSampler(width, height, radius) {
         gridWidth = Math.ceil(width / cellSize),
         gridHeight = Math.ceil(height / cellSize),
         grid = new Array(gridWidth * gridHeight),
-        queue = [],
-        backupQueue = [],
+        queue: any[][] = [],
+        backupQueue:any[][] = [],
         queueSize = 0,
         sampleSize = 0;
     return function () {
@@ -32,7 +32,7 @@ function poissonDiscSampler(width, height, radius) {
             }
 
             queue[i] = queue[--queueSize];
-            queue.length = queueSize;            
+            queue.length = queueSize;
 
             if (queueSize === 0 && (originalRadius * 0.7) < radius) {
                 queue = backupQueue;

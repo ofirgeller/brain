@@ -1,7 +1,0 @@
-{
-  "globalDependencies": {
-    "angular": "registry:dt/angular#1.5.0+20160709055139",
-    "jquery": "registry:dt/jquery#1.10.0+20160704162008",
-    "snapsvg": "registry:dt/snapsvg#0.4.1+20160317120654"
-  }
-}
