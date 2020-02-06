@@ -1,5 +1,7 @@
-import {SVG  } from '@svgdotjs/svg.js';
+import { SVG, Circle, Path } from '@svgdotjs/svg.js';
 import colors from './colors';
+import poissonDiscSampler from './poissonDiscSampler';
+import idGenerator from './idGenerator';
 
 // TODO: 
 // make the impulses bigger and have nicer colors
@@ -8,224 +10,225 @@ import colors from './colors';
 // make neuron randomly emit impulses(?)
 // make the axon more curve.
 
+type OldElm = any;
 
-var draw = SVG().addTo('body').size(300, 300);
+var draw = SVG().addTo('body').size(600, 600);
 
-// namespace network {
+interface IPoint {
+    x: number;
+    y: number;
+}
 
-//     interface IPoint {
-//         x: number;
-//         y: number;
-//     }
+class Pos implements IPoint {
+    constructor(public x, public y) {
+    }
+}
+ 
+var neurons: Neuron[] = [];
+var axons: Axon[] = [];
 
-//     class Pos implements IPoint {
-//         constructor(public x, public y) {
-//         }
-//     }
+var config = {
+    bgColor: '#0D0D0D',
+    axonStroke: '#8e8e8e',// '#1E1E1E',
+    neuronCount: 55,
+    axonCount: 10,
+    axonStrokeWidth: 1
+}
 
-//     var neurons: Neuron[] = [];
-//     var axons: Axon[] = [];
+var nextId = idGenerator();
 
-//     var config = {
-//         bgColor: '#0D0D0D',
-//         axonStroke: '#8e8e8e',// '#1E1E1E',
-//         neuronCount: 55,
-//         axonCount: 10,
-//         axonStrokeWidth: 1
-//     }
+class Neuron {
 
-//     var nextId = util.serialGenerator();
+    id: number;
+    inputAxons: Axon[] = [];
+    outputAxons: Axon[] = [];
+    elm: Circle;
 
-//     class Neuron {
+    constructor(public pos: IPoint, public size = 1) {
 
-//         id: number;
-//         inputAxons: Axon[] = [];
-//         outputAxons: Axon[] = [];
-//         elm: Snap.Element;
+        this.id = nextId();
 
-//         constructor(public pos: IPoint, public size = 1) {
+        this.elm = draw.circle(size)
+            .move(pos.x, pos.y)
+            .attr({
+                fill: colors.LighterGray,
+                stroke: colors.Charcoal,
+                strokeWidth: 1
+            });
 
-//             this.id = nextId();
+        this.elm.click((e: MouseEvent) => {
+            this.outputAxons.forEach(a => a.fire());
+        });
 
-//             this.elm = ctx.circle(pos.x, pos.y, size).attr({
-//                 fill: colors.LighterGray,
-//                 stroke: colors.Charcoal,
-//                 strokeWidth: 1
-//             });
+    }
 
-//             this.elm.click((e: MouseEvent) => {
-//                 this.outputAxons.forEach(a => a.fire());
-//             });
+    onPoke() {
+        this.outputAxons.forEach(a => {
+            var shouldFire = Math.round(Math.random());
+            if (shouldFire) a.fire();
 
-//         }
+        });
+    }
+}
 
-//         onPoke() {
-//             this.outputAxons.forEach(a => {
-//                 var shouldFire = Math.round(Math.random());
-//                 if (shouldFire) a.fire();
+class Axon {
 
-//             });
-//         }
-//     }
+    static existingConnections
+    id: number;
+    startNeuron: Neuron;
+    endNeuron: Neuron;
+    elm: Path;
+    elmBase: OldElm;
 
-//     class Axon {
+    pathPoints: IPoint[];
 
-//         static existingConnections
-//         id: number;
-//         startNeuron: Neuron;
-//         endNeuron: Neuron;
-//         elm: Snap.Element;
-//         elmBase: Snap.Element;
+    constructor(public first: Neuron, public second: Neuron) {
 
-//         pathPoints: IPoint[];
+        this.id = nextId();
+        this.startNeuron = first;
+        this.endNeuron = second;
 
-//         constructor(public first: Neuron, public second: Neuron) {
+        this.startNeuron.outputAxons.push(this);
+        this.endNeuron.inputAxons.push(this);
 
-//             this.id = nextId();
-//             this.startNeuron = first;
-//             this.endNeuron = second;
+        var curveBoost = Math.ceil(Math.random() * 20) + 10;
+        var curveSign = [1, -1][Math.round(Math.random() * 1)];
+        var curve = curveBoost * curveSign;
 
-//             this.startNeuron.outputAxons.push(this);
-//             this.endNeuron.inputAxons.push(this);
+        var startPoint = first.pos.x + ' ' + first.pos.y;
+        var endPoint = second.pos.x + ' ' + second.pos.y;
 
-//             var curveBoost = Math.ceil(Math.random() * 20) + 10;
-//             var curveSign = [1, -1][Math.round(Math.random() * 1)];
-//             var curve = curveBoost * curveSign;
-
-//             var startPoint = first.pos.x + ' ' + first.pos.y;
-//             var endPoint = second.pos.x + ' ' + second.pos.y;
-
-//             var midX = (first.pos.x + second.pos.x) / 2;
-//             var midY = (first.pos.y + second.pos.y) / 2;
-
-
-//             var ctrlPoint = (midX + curve) + ' ' + (midY + curve);
-
-//             this.elm = ctx.path('M ' + startPoint + ' C ' + startPoint + ', ' + ctrlPoint + ', ' + endPoint);
-//             this.addAttrib(this.elm);
-
-//             this.pathPoints = getPointsOnPath(this.elm);
-//         }
-
-//         addAttrib(elm: Snap.Element) {
-//             elm.attr({
-//                 fill: 'none',
-//                 stroke: config.axonStroke,
-//                 strokeWidth: config.axonStrokeWidth,
-//                 'z-index': -1,
-//             }).addClass('.no-click');
-//         }
-
-//         fire() {
-//             var idx = 0;
-//             var point = this.pathPoints[idx];
-//             var impulse: Snap.Element;
-
-//             var interval = setInterval(() => {
-
-//                 if (!impulse) {
-//                     impulse = ctx.circle(point.x, point.y, 3)
-//                         .attr({ fill: colors.Orange, stroke: '#00ce68' });
-//                 }
-
-//                 idx++;
-//                 point = this.pathPoints[idx];
-//                 if (point) {
-//                     impulse.animate({ cx: point.x, cy: point.y }, 90);
-//                 } else {
-//                     clearInterval(interval);
-//                     impulse.remove();
-//                     this.endNeuron.onPoke();
-//                 }
-//             }, 100)
-
-//         }
-//     }
-
-//     function getPointsOnPath(path: Snap.Element, numberOfPoints = 10) {
-
-//         if (path.type !== 'path') {
-//             throw new Error('getPointsOnPath was passed a none path snap element ' + path.type);
-//         }
-
-//         var points: IPoint[] = [];
-
-//         var length = path.getTotalLength();
-//         var lengthInc = length / numberOfPoints;
-//         var runningLength = -lengthInc;
-//         for (var i = 0; i < numberOfPoints; i++) {
-//             runningLength = runningLength + lengthInc;
-//             points.push(path.getPointAtLength(runningLength));
-//         }
-
-//         return points;
-//     }
+        var midX = (first.pos.x + second.pos.x) / 2;
+        var midY = (first.pos.y + second.pos.y) / 2;
 
 
-//     var jSvg = $('#network');
+        var ctrlPoint = (midX + curve) + ' ' + (midY + curve);
 
-//     function sizeSvg() {
-//         jSvg.height($(window).innerHeight() - 20);
-//         jSvg.width($(window).innerWidth() - 20);
-//     }
-//     sizeSvg();
+        this.elm = draw.path('M ' + startPoint + ' C ' + startPoint + ', ' + ctrlPoint + ', ' + endPoint);
+        this.addAttrib(this.elm);
 
-//     var svg = <SVGElement><any>jSvg.get(0);
-//     var ctx = Snap(svg);
-//     ctx.attr({ fill: config });
+        this.pathPoints = getPointsOnPath(this.elm);
+    }
 
-//     var samples = poissonDiscSampler(jSvg.width(), jSvg.height(), 65);
+    addAttrib(elm: OldElm) {
+        elm.attr({
+            fill: 'none',
+            stroke: config.axonStroke,
+            strokeWidth: config.axonStrokeWidth,
+            'z-index': -1,
+        }).addClass('.no-click');
+    }
 
-//     for (var j = 0; j < config.neuronCount; j++) {
-//         var sample = samples();
-//         if (!sample || !sample[0]) {
-//             break;
-//         }
+    fire() {
+        var idx = 0;
+        var point = this.pathPoints[idx];
+        var impulse: Circle;
 
-//         var size = Math.ceil(Math.random() * 2) + 3;
-//         var neuron = new Neuron(new Pos(sample[0], sample[1]), size);
-//         neurons.push(neuron);
-//     }
+        var interval = setInterval(() => {
 
+            if (!impulse) {
+                impulse = draw.circle(3)
+                    .move(point.x, point.y)
+                    .attr({ fill: colors.Orange, stroke: '#00ce68' });
+            }
 
-//     // try to connect to the closest neurons.
-//     // avoid cyclic a=> b, b=>a
-//     for (var j = 0; j < neurons.length; j++) {
+            idx++;
+            point = this.pathPoints[idx];
+            if (point) {
+                impulse.animate(90).move(point.x, point.y);
+            } else {
+                clearInterval(interval);
+                impulse.remove();
+                this.endNeuron.onPoke();
+            }
+        }, 100)
 
-//         var first = neurons[j];
-//         var connections = 0;
-//         var options = findNClosestNeurons(j, 4);
-//         for (var i = 0; i < options.length && connections < 2; i++) {
+    }
+}
 
-//             var second = neurons[options[i].idx];
-//             if (!second.outputAxons.some(a => a.endNeuron.id === first.id)) {
-//                 var axon = new Axon(first, second);
-//                 axons.push(axon);
-//                 connections++;
-//             }
-//         }
-//     }
+function getPointsOnPath(path: Path, numberOfPoints = 10) {
 
+    if (path.type !== 'path') {
+        throw new Error('getPointsOnPath was passed a none path snap element ' + path.type);
+    }
 
-//     function findNClosestNeurons(index: number, n: number) {
-//         var base = neurons[index];
+    var points: IPoint[] = [];
 
-//         var options = neurons.filter(i => i.id !== base.id)
-//             .map((i, idx, arr) => {
-//                 return { idx: idx, distance: distance(i.pos, base.pos) };
-//             }).sort((a, b) => a.distance - b.distance)
-//             .filter((i, idx) => idx < n);
+    var length = path.length();
+    var lengthInc = length / numberOfPoints;
+    var runningLength = -lengthInc;
+    for (var i = 0; i < numberOfPoints; i++) {
+        runningLength = runningLength + lengthInc;
+        points.push(path.pointAt(runningLength));
+    }
 
-//         return options;
-//     }
+    return points;
+}
 
-//     function distance(p1: IPoint, p2: IPoint) {
-//         return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-//     }
+/// TODO: needed? maybe just use css or at least find elm with doc.query
+// var jSvg = $('#network');
 
-
-//     function pointsAsString(points: IPoint[]) {
-//         points.map(p => p.x + ',' + p.y + ' ').join('');
-//     }
-
+// function sizeSvg() {
+//     jSvg.height($(window).innerHeight() - 20);
+//     jSvg.width($(window).innerWidth() - 20);
 // }
+// sizeSvg();
+
+var svg = <SVGElement><any>draw.get(0);
+
+draw.attr({ fill: config });
+
+var samples = poissonDiscSampler(draw.width(), draw.height(), 65);
+
+for (var j = 0; j < config.neuronCount; j++) {
+    var sample = samples();
+    if (!sample || !sample[0]) {
+        break;
+    }
+
+    var size = Math.ceil(Math.random() * 2) + 3;
+    var neuron = new Neuron(new Pos(sample[0], sample[1]), size);
+    neurons.push(neuron);
+}
+
+
+// try to connect to the closest neurons.
+// avoid cyclic a=> b, b=>a
+for (var j = 0; j < neurons.length; j++) {
+
+    var first = neurons[j];
+    var connections = 0;
+    var options = findNClosestNeurons(j, 4);
+    for (var i = 0; i < options.length && connections < 2; i++) {
+
+        var second = neurons[options[i].idx];
+        if (!second.outputAxons.some(a => a.endNeuron.id === first.id)) {
+            var axon = new Axon(first, second);
+            axons.push(axon);
+            connections++;
+        }
+    }
+}
+
+
+function findNClosestNeurons(index: number, n: number) {
+    var base = neurons[index];
+
+    var options = neurons.filter(i => i.id !== base.id)
+        .map((i, idx, arr) => {
+            return { idx: idx, distance: distance(i.pos, base.pos) };
+        }).sort((a, b) => a.distance - b.distance)
+        .filter((i, idx) => idx < n);
+
+    return options;
+}
+
+function distance(p1: IPoint, p2: IPoint) {
+    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+}
+
+
+function pointsAsString(points: IPoint[]) {
+    points.map(p => p.x + ',' + p.y + ' ').join('');
+}
+

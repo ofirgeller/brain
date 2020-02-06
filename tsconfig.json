@@ -30,7 +30,7 @@
         "checkJs": false,
         "jsx": "react"
     },
-    "include": [
+    "files": [
         "src/index.ts"
     ],
     "exclude": [
