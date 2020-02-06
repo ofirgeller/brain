@@ -1,6 +1,4 @@
 .vs/
-bin/
-obj/
+dist/
 node_modules/
-wwwroot/scripts/**/*
-wwwroot/styles/**/*
+
