@@ -35,9 +35,9 @@ var config = {
     axonStrokeWidth: 1
 }
 
-var nextId = idGenerator();
-
 class Neuron {
+
+    private static nextId = idGenerator();
 
     id: number;
     inputAxons: Axon[] = [];
@@ -46,7 +46,7 @@ class Neuron {
 
     constructor(public pos: IPoint, public size = 1) {
 
-        this.id = nextId();
+        this.id = Neuron.nextId();
 
         this.elm = draw.circle(size)
             .move(pos.x, pos.y)
@@ -73,7 +73,8 @@ class Neuron {
 
 class Axon {
 
-    static existingConnections
+    private static nextId = idGenerator();
+
     id: number;
     startNeuron: Neuron;
     endNeuron: Neuron;
@@ -82,7 +83,7 @@ class Axon {
 
     constructor(public first: Neuron, public second: Neuron) {
 
-        this.id = nextId();
+        this.id = Axon.nextId();
         this.startNeuron = first;
         this.endNeuron = second;
 
