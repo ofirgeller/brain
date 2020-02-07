@@ -28,8 +28,8 @@ var axons: Axon[] = [];
 var config = {
     bgColor: '#0D0D0D',
     axonStroke: '#8e8e8e',// '#1E1E1E',
-    neuronCount: 20,
-    axonCount: 10,
+    neuronCount: 50,
+    axonCount: 50,
     axonStrokeWidth: 1
 }
 
@@ -53,7 +53,7 @@ class Neuron {
                 stroke: colors.Charcoal,
                 strokeWidth: 1
             });
-
+            
         this.elm.click((e: MouseEvent) => {
             this.outputAxons.forEach(a => a.fire());
         });
@@ -126,7 +126,7 @@ class Axon {
         var interval = setInterval(() => {
 
             if (!impulse) {
-                impulse = draw.circle(3)
+                impulse = draw.circle(5)
                     .move(point.x, point.y)
                     .attr({ fill: colors.Orange, stroke: '#00ce68' });
             }
@@ -166,7 +166,8 @@ function getPointsOnPath(path: Path, numberOfPoints = 10) {
 
 draw.attr({ fill: config });
 
-var samples = poissonDiscSampler(draw.width(), draw.height(), 65);
+const MARGIN = 30; 
+var samples = poissonDiscSampler(draw.width() - MARGIN, draw.height() - MARGIN, 65);
 
 for (var j = 0; j < config.neuronCount; j++) {
     var sample = samples();
@@ -174,8 +175,8 @@ for (var j = 0; j < config.neuronCount; j++) {
         break;
     }
 
-    var size = Math.ceil(Math.random() * 2) + 3;
-    var neuron = new Neuron(new Pos(sample[0], sample[1]), size);
+    var size = Math.ceil(Math.random() * 2) + 6;
+    var neuron = new Neuron(new Pos(sample[0] + MARGIN / 2, sample[1] + MARGIN / 2), size);
     neurons.push(neuron);
 }
 
