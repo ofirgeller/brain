@@ -78,8 +78,6 @@ class Axon {
     startNeuron: Neuron;
     endNeuron: Neuron;
     elm: Path;
-    elmBase: OldElm;
-
     pathPoints: IPoint[];
 
     constructor(public first: Neuron, public second: Neuron) {
@@ -110,7 +108,7 @@ class Axon {
         this.pathPoints = getPointsOnPath(this.elm);
     }
 
-    addAttrib(elm: OldElm) {
+    addAttrib(elm: Path) {
         elm.attr({
             fill: 'none',
             stroke: config.axonStroke,
@@ -165,17 +163,6 @@ function getPointsOnPath(path: Path, numberOfPoints = 10) {
     return points;
 }
 
-/// TODO: needed? maybe just use css or at least find elm with doc.query
-// var jSvg = $('#network');
-
-// function sizeSvg() {
-//     jSvg.height($(window).innerHeight() - 20);
-//     jSvg.width($(window).innerWidth() - 20);
-// }
-// sizeSvg();
-
-var svg = <SVGElement><any>draw.get(0);
-
 draw.attr({ fill: config });
 
 var samples = poissonDiscSampler(draw.width(), draw.height(), 65);
@@ -225,10 +212,5 @@ function findNClosestNeurons(index: number, n: number) {
 
 function distance(p1: IPoint, p2: IPoint) {
     return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-}
-
-
-function pointsAsString(points: IPoint[]) {
-    points.map(p => p.x + ',' + p.y + ' ').join('');
 }
 
