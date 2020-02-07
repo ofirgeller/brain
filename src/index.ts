@@ -23,7 +23,7 @@ class Pos implements IPoint {
     constructor(public x, public y) {
     }
 }
- 
+
 var neurons: Neuron[] = [];
 var axons: Axon[] = [];
 
@@ -202,10 +202,10 @@ function findNClosestNeurons(index: number, n: number) {
     var base = neurons[index];
 
     var options = neurons.filter(i => i.id !== base.id)
-        .map((i, idx, arr) => {
+        .map((i, idx) => {
             return { idx: idx, distance: distance(i.pos, base.pos) };
         }).sort((a, b) => a.distance - b.distance)
-        .filter((i, idx) => idx < n);
+        .slice(0, n);
 
     return options;
 }
