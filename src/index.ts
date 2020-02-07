@@ -10,7 +10,7 @@ import idGenerator from './idGenerator';
 // make neuron randomly emit impulses(?)
 // make the axon more curve.
 
-var draw = SVG().addTo('body').size(600, 600);
+var draw = SVG().addTo('#container').size(600, 600);
 
 interface IPoint {
     x: number;
