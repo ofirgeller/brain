@@ -10,8 +10,6 @@ import idGenerator from './idGenerator';
 // make neuron randomly emit impulses(?)
 // make the axon more curve.
 
-type OldElm = any;
-
 var draw = SVG().addTo('body').size(600, 600);
 
 interface IPoint {
@@ -20,7 +18,7 @@ interface IPoint {
 }
 
 class Pos implements IPoint {
-    constructor(public x, public y) {
+    constructor(public x: number, public y: number) {
     }
 }
 
@@ -30,7 +28,7 @@ var axons: Axon[] = [];
 var config = {
     bgColor: '#0D0D0D',
     axonStroke: '#8e8e8e',// '#1E1E1E',
-    neuronCount: 55,
+    neuronCount: 20,
     axonCount: 10,
     axonStrokeWidth: 1
 }
@@ -64,9 +62,10 @@ class Neuron {
 
     onPoke() {
         this.outputAxons.forEach(a => {
-            var shouldFire = Math.round(Math.random());
-            if (shouldFire) a.fire();
-
+            var shouldFire = Math.random() > 0.5;
+            if (shouldFire) {
+                a.fire();
+            }
         });
     }
 }
@@ -84,6 +83,7 @@ class Axon {
     constructor(public first: Neuron, public second: Neuron) {
 
         this.id = Axon.nextId();
+
         this.startNeuron = first;
         this.endNeuron = second;
 
@@ -184,14 +184,15 @@ for (var j = 0; j < config.neuronCount; j++) {
 // avoid cyclic a=> b, b=>a
 for (var j = 0; j < neurons.length; j++) {
 
-    var first = neurons[j];
+    var startNeuron = neurons[j];
     var connections = 0;
     var options = findNClosestNeurons(j, 4);
+
     for (var i = 0; i < options.length && connections < 2; i++) {
 
-        var second = neurons[options[i].idx];
-        if (!second.outputAxons.some(a => a.endNeuron.id === first.id)) {
-            var axon = new Axon(first, second);
+        var second = options[i].neuron;
+        if (!second.outputAxons.some(a => a.endNeuron.id === startNeuron.id)) {
+            var axon = new Axon(startNeuron, second);
             axons.push(axon);
             connections++;
         }
@@ -204,7 +205,7 @@ function findNClosestNeurons(index: number, n: number) {
 
     var options = neurons.filter(i => i.id !== base.id)
         .map((i, idx) => {
-            return { idx: idx, distance: distance(i.pos, base.pos) };
+            return { neuron: i, distance: distance(i.pos, base.pos) };
         }).sort((a, b) => a.distance - b.distance)
         .slice(0, n);
 
